@@ -64,7 +64,6 @@ const excludeFilter =
 
 // 预定义 rules
 const rules = [
-
   // <<<TAILSCALE-RULES>>>
   // Tailscale 网段优先（置于最前）
   'IP-CIDR,100.64.0.0/10,Tailscale,no-resolve',
@@ -800,8 +799,6 @@ function main(config) {
   });
   // <<<TAILSCALE-GROUP-END>>>
 
-
-
   // 构建 GLOBAL 全局策略组
   const globalGroup = {
     ...selectBaseOption,
@@ -887,12 +884,13 @@ function main(config) {
       name: '🇨🇳 直连 | 双栈',
       type: 'direct',
     },
-  // <<<TAILSCALE-PROXY>>>
+    // <<<TAILSCALE-PROXY>>>
     {
       name: 'TAILSCALE',
       type: 'tailscale',
       hostname: 'flclash-android',
-      'auth-key': 'tskey-auth-kBPsdWyFE911CNTRL-EF8jUxZQb2cYWy3uY8My2cmMLUUyFpX6',
+      'auth-key':
+        'tskey-auth-kBPsdWyFE911CNTRL-EF8jUxZQb2cYWy3uY8My2cmMLUUyFpX6',
       'control-url': 'https://controlplane.tailscale.com',
       'state-dir': './tailscale',
       ephemeral: false,
@@ -900,9 +898,7 @@ function main(config) {
       'accept-routes': true,
       'ip-version': 'ipv4-prefer',
     },
-  // <<<TAILSCALE-PROXY-END>>>
-
-
+    // <<<TAILSCALE-PROXY-END>>>
   );
 
   config['proxy-groups'] = [
