@@ -64,6 +64,14 @@ const excludeFilter =
 
 // 预定义 rules
 const rules = [
+
+  // <<<TAILSCALE-RULES>>>
+  // Tailscale 网段优先（置于最前）
+  'IP-CIDR,100.64.0.0/10,Tailscale,no-resolve',
+  'IP-CIDR,100.100.100.100/32,Tailscale,no-resolve',
+  'DOMAIN-SUFFIX,ts.net,Tailscale',
+  // <<<TAILSCALE-RULES-END>>>
+
   // 私有网络直连
   'RULE-SET,private,直连',
   'RULE-SET,private_ip,直连,no-resolve',
@@ -783,6 +791,16 @@ function main(config) {
     url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',
   });
+  // <<<TAILSCALE-GROUP>>>
+  functionalGroups.push({
+    ...selectBaseOption,
+    name: 'Tailscale',
+    proxies: ['TAILSCALE', '直连'],
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Network.png',
+  });
+  // <<<TAILSCALE-GROUP-END>>>
+
+
 
   // 构建 GLOBAL 全局策略组
   const globalGroup = {
@@ -869,6 +887,22 @@ function main(config) {
       name: '🇨🇳 直连 | 双栈',
       type: 'direct',
     },
+  // <<<TAILSCALE-PROXY>>>
+    {
+      name: 'TAILSCALE',
+      type: 'tailscale',
+      hostname: 'flclash-android',
+      'auth-key': 'tskey-auth-kBPsdWyFE911CNTRL-EF8jUxZQb2cYWy3uY8My2cmMLUUyFpX6',
+      'control-url': 'https://controlplane.tailscale.com',
+      'state-dir': './tailscale',
+      ephemeral: false,
+      udp: true,
+      'accept-routes': true,
+      'ip-version': 'ipv4-prefer',
+    },
+  // <<<TAILSCALE-PROXY-END>>>
+
+
   );
 
   config['proxy-groups'] = [
