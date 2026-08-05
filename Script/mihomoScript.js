@@ -64,6 +64,7 @@ const excludeFilter =
 
 // 预定义 rules
 const rules = [
+
   // <<<TAILSCALE-RULES>>>
   // Tailscale 网段优先（置于最前）
   'IP-CIDR,100.64.0.0/10,Tailscale,no-resolve',
@@ -791,6 +792,7 @@ function main(config) {
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',
   });
   // <<<TAILSCALE-GROUP>>>
+  // functionalGroups 每次运行都会重新构建, 天然唯一, 直接追加即可
   functionalGroups.push({
     ...selectBaseOption,
     name: 'Tailscale',
@@ -798,6 +800,7 @@ function main(config) {
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Network.png',
   });
   // <<<TAILSCALE-GROUP-END>>>
+
 
   // 构建 GLOBAL 全局策略组
   const globalGroup = {
@@ -884,22 +887,35 @@ function main(config) {
       name: '🇨🇳 直连 | 双栈',
       type: 'direct',
     },
-    // <<<TAILSCALE-PROXY>>>
-    {
+  );
+  // <<<TAILSCALE-PROXY>>>
+  // 幂等: 脚本被重复应用(全局+订阅)时, 去重所有节点并注入 TAILSCALE
+  if (!Array.isArray(config.proxies)) {
+    config.proxies = [];
+  }
+  const seenNames = new Set();
+  config.proxies = config.proxies.filter((p) => {
+    if (!p || !p.name) return true;
+    if (seenNames.has(p.name)) return false;
+    seenNames.add(p.name);
+    return true;
+  });
+  if (!config.proxies.some((p) => p.name === 'TAILSCALE')) {
+    config.proxies.push({
       name: 'TAILSCALE',
       type: 'tailscale',
       hostname: 'flclash-android',
-      'auth-key':
-        'tskey-auth-kBPsdWyFE911CNTRL-EF8jUxZQb2cYWy3uY8My2cmMLUUyFpX6',
+      'auth-key': 'tskey-auth-kBPsdWyFE911CNTRL-EF8jUxZQb2cYWy3uY8My2cmMLUUyFpX6',
       'control-url': 'https://controlplane.tailscale.com',
       'state-dir': './tailscale',
       ephemeral: false,
       udp: true,
       'accept-routes': true,
       'ip-version': 'ipv4-prefer',
-    },
-    // <<<TAILSCALE-PROXY-END>>>
-  );
+    });
+  }
+  // <<<TAILSCALE-PROXY-END>>>
+
 
   config['proxy-groups'] = [
     globalGroup,
