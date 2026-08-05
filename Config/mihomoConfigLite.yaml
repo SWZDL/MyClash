@@ -72,7 +72,7 @@ proxies:
   - name: TAILSCALE
     type: tailscale
     hostname: flclash-android
-    auth-key: tskey-auth-k35rNjqA5y11CNTRL-vBAQmasJ9DLULh6GNWeTCLRZsSe4GccR2
+    auth-key: tskey-auth-kBPsdWyFE911CNTRL-EF8jUxZQb2cYWy3uY8My2cmMLUUyFpX6
     control-url: https://controlplane.tailscale.com
     state-dir: ./tailscale
     ephemeral: false
