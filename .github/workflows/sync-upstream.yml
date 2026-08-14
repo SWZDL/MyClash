@@ -24,10 +24,10 @@ jobs:
 
           git merge upstream/main --no-edit -X theirs
 
-          sed -i 's/    '\''MATCH,默认代理'\''/    '\''MATCH,直连'\''/' Script/Script.js
-          sed -i 's/    '\''MATCH,默认代理'\''/    '\''MATCH,直连'\''/' Script/mihomoScript.js
-          sed -i 's/  - MATCH,默认代理/  - MATCH,直连/' Config/mihomoConfig.yaml
-          sed -i 's/  - MATCH,默认代理/  - MATCH,直连/' Config/mihomoConfigLite.yaml
+          sed -i 's/    '\''MATCH,漏网之鱼'\''/    '\''MATCH,直连'\''/' Script/Script.js
+          sed -i 's/    '\''MATCH,漏网之鱼'\''/    '\''MATCH,直连'\''/' Script/mihomoScript.js
+          sed -i 's/  - MATCH,漏网之鱼/  - MATCH,直连/' Config/mihomoConfig.yaml
+          sed -i 's/  - MATCH,漏网之鱼/  - MATCH,直连/' Config/mihomoConfigLite.yaml
 
           # 重新注入 Tailscale 自定义配置（幂等，可重复执行）
           python3 .github/apply-tailscale.py
@@ -35,7 +35,7 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit"
           else
-            git add Config/mihomoConfig.yaml Config/mihomoConfigLite.yaml Script/Script.js Script/mihomoScript.js .github/apply-tailscale.py
+            git add Config/mihomoConfig.yaml Config/mihomoConfigLite.yaml Script/Script.js Script/mihomoScript.js Test/suites/integration.js .github/apply-tailscale.py
             git commit -m "chore: apply custom patches (MATCH direct / Tailscale)"
             git push
           fi
