@@ -25,7 +25,15 @@ jobs:
           git remote add upstream https://github.com/AIsouler/MyClash.git || git remote set-url upstream https://github.com/AIsouler/MyClash.git
           git fetch upstream main
 
-          git merge upstream/main --no-edit -X theirs
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "Already up to date with upstream"
+          else
+            # Keep this fork's workflows unchanged: GITHUB_TOKEN cannot push
+            # commits that create or modify files under .github/workflows.
+            git merge upstream/main --no-commit --no-ff -X theirs
+            git restore --source=HEAD --staged --worktree -- .github/workflows
+            git commit --no-edit
+          fi
 
           sed -i 's/    '\''MATCH,漏网之鱼'\''/    '\''MATCH,直连'\''/' Script/Script.js
           sed -i 's/    '\''MATCH,漏网之鱼'\''/    '\''MATCH,直连'\''/' Script/mihomoScript.js
