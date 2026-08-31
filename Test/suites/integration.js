@@ -329,7 +329,10 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
 
   // ---------------- 代理 IP 版本优先 ----------------
   h.section('集成测试 · 代理IP版本优先');
-  const nonDirectProxies = (out) => out.proxies.filter((p) => p.type !== 'direct');
+  // <<<TAILSCALE-TEST>>>
+  // Tailscale 节点不属于订阅节点, 从测试的订阅节点集合中排除
+  const nonDirectProxies = (out) => out.proxies.filter((p) => p.type !== 'direct' && p.name !== 'TAILSCALE');
+  // <<<TAILSCALE-TEST-END>>>
   h.test('代理IPV4优先=true → 订阅节点统一为 ipv4-prefer，自定义/直连节点不受影响', () => {
     // 注入带 ip-version 的自定义节点，验证其不参与改写
     const customApi = loadScript(scriptFile, (code) =>
@@ -505,9 +508,11 @@ function runIntegrationTests(h, api, meta, fx, loadScript, scriptFile) {
 
       // 链式中转直接放入所有订阅节点（不含自定义节点与直连节点），不放入任何策略组
       const customNodeNames = new Set(customGroup.proxies);
+      // <<<TAILSCALE-TEST-CHAIN>>>
       const subscriptionNodes = out.proxies
-        .filter((p) => p.type !== 'direct' && !customNodeNames.has(p.name))
+        .filter((p) => p.type !== 'direct' && p.name !== 'TAILSCALE' && !customNodeNames.has(p.name))
         .map((p) => p.name);
+      // <<<TAILSCALE-TEST-CHAIN-END>>>
       h.assert(subscriptionNodes.length > 0, '前置：应存在订阅节点');
       h.assertEqual(chain.proxies.length, subscriptionNodes.length, '链式中转应仅包含订阅节点');
       for (const name of subscriptionNodes) {

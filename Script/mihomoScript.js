@@ -1314,23 +1314,19 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
   );
   // <<<TAILSCALE-PROXY>>>
   // 幂等: 脚本被重复应用(全局+订阅)时, 去重所有节点并注入 TAILSCALE
-  if (!Array.isArray(config.proxies)) {
-    config.proxies = [];
-  }
   const seenNames = new Set();
-  config.proxies = config.proxies.filter((p) => {
+  newConfig['proxies'] = newConfig['proxies'].filter((p) => {
     if (!p || !p.name) return true;
     if (seenNames.has(p.name)) return false;
     seenNames.add(p.name);
     return true;
   });
-  if (!config.proxies.some((p) => p.name === 'TAILSCALE')) {
-    config.proxies.push({
+  if (!newConfig['proxies'].some((p) => p.name === 'TAILSCALE')) {
+    newConfig['proxies'].push({
       name: 'TAILSCALE',
       type: 'tailscale',
       hostname: 'flclash-android',
-      'auth-key':
-        'tskey-auth-kBPsdWyFE911CNTRL-EF8jUxZQb2cYWy3uY8My2cmMLUUyFpX6',
+      'auth-key': 'tskey-auth-kBPsdWyFE911CNTRL-EF8jUxZQb2cYWy3uY8My2cmMLUUyFpX6',
       'control-url': 'https://controlplane.tailscale.com',
       'state-dir': './tailscale',
       ephemeral: false,
@@ -1492,6 +1488,12 @@ function main(config) {
   newConfig['rule-providers'] = finalRuleProviders;
 
   newConfig['rules'] = [
+    // <<<TAILSCALE-RULES>>>
+    // Tailscale 网段优先（置于最前）
+    'IP-CIDR,100.64.0.0/10,Tailscale,no-resolve',
+    'IP-CIDR,100.100.100.100/32,Tailscale,no-resolve',
+    'DOMAIN-SUFFIX,ts.net,Tailscale',
+    // <<<TAILSCALE-RULES-END>>>
     ...prefixRules,
     ...(ruleOptionsEnable.屏蔽国外QUIC ? blockForeignQuic : []),
     ...functionalRules,
@@ -1501,7 +1503,7 @@ function main(config) {
     'RULE-SET,geolocation-cn,直连',
     'RULE-SET,cn_ip,直连',
     'RULE-SET,private_ip,直连',
-    'MATCH,漏网之鱼',
+    'MATCH,直连',
   ];
 
   return newConfig;
