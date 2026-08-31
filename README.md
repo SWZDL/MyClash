@@ -1,71 +1,108 @@
 # MyClash
 
-Mihomo（Clash Meta）配置文件和覆写脚本，分别提供全量版和精简版，无DNS泄露（图一乐），内置多项分流策略、地区策略，实现全局排除节点、自动识别节点倍率等功能
+基于 [Mihomo](https://github.com/MetaCubeX/mihomo/tree/Alpha) 的配置文件与覆写脚本，提供全量版和精简版。
 
-友情推荐，非常好用、省电且内存占用低的代理软件：[Bettbox](https://github.com/appshubcc/Bettbox)
+主要特性：
 
-## 配置文件
+- 内置多种分流策略与地区策略
+- 自动排除无效地区节点
+- 自动识别节点倍率并分类
+- 解决机场私有 DNS、hosts 导致节点域名无法解析的问题
+- 优化 DNS 配置，无 DNS 泄露风险
+- 支持 Bettbox 图形化配置管理
 
-> - _配置文件实现的效果和脚本基本一致_
-> - _不支持自定义 **启用/禁用** 策略组_
-> - _无法像脚本那样实现不生成未匹配到节点的策略组_
+友情推荐：
+[Bettbox](https://github.com/appshubcc/Bettbox) —— 一款轻量、省电、低内存占用的代理客户端。
 
-- [mihomoConfig.yaml（全量版）](/Config/mihomoConfig.yaml)
+**覆写脚本已适配 Bettbox，可通过图形界面自定义启用策略组及配置选项，获得更灵活的使用体验，具体效果请查看下方效果预览图。**
 
-- [mihomoConfigLite.yaml（精简版）](/Config/mihomoConfigLite.yaml)
+---
 
 ## 覆写脚本
 
-### 使用方式
+### 注意事项
 
 > [!IMPORTANT]
-> **注意⚠️：该脚本仅适用于覆写机场提供的配置文件，请勿用于覆写自己编写的配置文件**
+>
+> ⚠️该脚本仅用于覆写机场提供的配置文件，请勿用于覆写自行编写的配置
+>
+> ⚠️脚本已解决部分机场抽象DNS导致无法解析节点或者使用脚本覆写导致解析出来节点延迟高的问题，请务必关闭代理软件的DNS覆写功能
 
-#### 通过链接导入
+### 脚本功能
 
-复制以下任意一个脚本链接后按如图所示步骤导入到代理客户端，以 [Bettbox](https://github.com/appshubcc/Bettbox) 为例
+- ✅ 解决机场私有 DNS 或节点域名 hosts 映射导致的节点解析问题（节点 hosts 映射将自动改写进节点 `server`，无需复制 hosts）
+- ✅ 根据节点匹配情况动态生成地区策略组
+- ✅ 支持自定义是否生成地区自动选择策略组
+- ✅ 支持自定义是否隐藏地区手动选择策略组
+- ✅ 支持自定义是否生成 高/低 倍率节点组
+- ✅ 支持自定义是否将全部节点加入分流策略组
+- ✅ 支持自定义是否过滤高倍率节点
+- ✅ 支持自定义是否过滤非地区节点
+- ✅ 支持自定义是否屏蔽国外 QUIC 流量
+- ✅ 支持自定义是否将订阅节点统一为 IPv4/IPv6 优先（同时开启时不生效）
+- ✅ 支持在脚本中配置自定义节点（自动生成“自建节点”策略组，与订阅节点重名时自动添加“自建-”前缀）
+- ✅ 支持链式代理（将自定义节点作为落地节点，经“链式中转”策略组通过订阅节点中转；启用后自动为自定义节点添加 `dialer-proxy`）
 
-- 全量版（包含全部分流策略组）
+### 使用方法（脚本）
+
+复制以下任意一个链接或者复制完整代码后按如图所示步骤导入到代理客户端，以 [Bettbox](https://github.com/appshubcc/Bettbox) 为例
+
+- [mihomoScript.js（全量版）](/Script/mihomoScript.js)，复制下面这个链接使用👇👇👇
 
 ```txt
-https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/mihomoScript.js
+https://raw.githubusercontent.com/AIsouler/MyClash/main/Script/mihomoScript.js
 ```
 
-- 精简版（仅包含小部分分流策略组）
+- [Script.js（精简版）](/Script/Script.js)，仅包含少量分流策略组，复制下面这个链接使用👇👇👇
 
 ```txt
-https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/Script.js
+https://raw.githubusercontent.com/AIsouler/MyClash/main/Script/Script.js
 ```
 
 |                                                                                   |
 | --------------------------------------------------------------------------------- |
 | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/import.webp) |
 
-#### 通过复制代码导入
+## 配置文件
 
-部分代理客户端不支持链接导入，可以点击以下链接后复制脚本完整代码再导入到代理客户端
+配置文件与脚本实现效果基本一致，但功能存在限制。
 
-点击以下链接即可查看脚本代码
+### 限制
 
-[mihomoScript.js（全量版）](/Script/mihomoScript.js)
+- 不支持自定义启用/禁用配置项
+- 无法根据节点匹配情况动态生成策略组
+- 使用私有 DNS 或 hosts 节点域名映射的机场需要手动写入配置中
+- 未匹配地区的策略组将回退至 REJECT
 
-[Script.js（精简版）](/Script/Script.js)
+### 使用方法（配置）
 
-## 配置和脚本说明
+复制以下任意一个链接或者复制完整代码后导入代理客户端
+
+- [mihomoConfig.yaml（全量版）](/Config/mihomoConfig.yaml)，复制下面这个链接使用👇👇👇
+
+```txt
+https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfig.yaml
+```
+
+- [mihomoConfigLite.yaml（精简版）](/Config/mihomoConfigLite.yaml)，仅包含少量分流策略组，复制下面这个链接使用👇👇👇
+
+```txt
+https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfigLite.yaml
+```
+
+## 功能说明
 
 - 仅适用于使用 [mihomo 内核](https://github.com/MetaCubeX/mihomo/tree/Alpha) 的代理客户端
 
-- 脚本仅适用于覆写机场提供的配置文件，请勿用于覆写自己编写的配置文件
+- 全量版和精简版仅有分流策略组数量差异，其他基本一致，若不需要很多分流策略组，可使用精简版
 
-- 全量版脚本内策略组、节点组均支持自定义是否启用（默认启用）
-
-- 内置的DNS配置已解决DNS泄露问题（图一乐），建议不要开启代理软件的DNS覆写
+- 内置的DNS配置已解决DNS泄露问题（在 Windows 上需要关闭系统的智能多宿主解析功能或在代理软件中开启 [严格路由](https://wiki.metacubex.one/config/inbound/tun/#strict-route)），DNS配置和路由规则是配套的，建议不要开启代理软件的DNS覆写或随意修改
 
 - 规则采用 `rule-set` 模式，按需添加规则集，告别臃肿的 geodata，减少内存占用
 
 - 规则以 `domain` 与 `ipcidr` 行为为主，相比 `classical` 查询效率更高
 
-- 自动排除非国家或地区的信息节点，可自定义是否启用（默认启用）
+- 自动排除非国家或地区的信息节点
 
 - 自动识别节点倍率，并分别归类为独立节点组：
   - 高倍率节点（倍率 ≥2）
@@ -73,37 +110,39 @@ https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/Script
 
 ## 内置策略组
 
-> - _若不需要某个分流策略组，可在脚本中将 `ruleOptionsEnable` 对应值设为 `false`_
+> - 若不需要某个分流策略组，可在脚本中将 `ruleOptionsEnable` 对应值设为 `false`
 
 - `默认代理`
+- `手动选择`
 - `自动选择`
 - `负载均衡`
-- `AI`
-- `YouTube`
 - `FCM`
+- `YouTube`
 - `Google`
-- `GitHub`
+- `AI`
 - `Microsoft`
 - `Apple`
 - `Telegram`
-- `Cloudflare`
-- `Pixiv`
 - `Steam`
-- `Twitter`
-- `Instagram`
-- `Emby`
-- `Spotify`
 - `TikTok`
+- `Instagram`
 - `Netflix`
-- `广告拦截`
-- `直连` （可自定义IP优先级，建议使用 `IPv4优先`，防止出现一些问题）
+- `Twitter`
+- `Emby`
+- `PikPak`
+- `Spotify`
+- `Crypto`
+- `EHentai`
+- `AdBlock`
+- `直连` （可自定义 `双栈/IPv4优先/IPv6优先/仅IPv4/仅IPv6`）
+- `漏网之鱼`
+- `自建节点/链式落地` （仅添加了自定义节点时生成）
+- `链式中转` （仅启用链式代理且配置自定义节点时生成）
 
 ## 内置节点组
 
-> - _所有组均为手动选择（select），内部包含对应的自动选择策略组和负载均衡策略组_
-> - _若不需要某个节点组，可在脚本中将 `regionDefinitionsEnable` 对应值设为 `false`_
-> - _若机场订阅中不存在对应节点组的节点，则该节点组不会显示_
-> - _未匹配节点组或未启用节点组的节点，将统一归类至 「其他节点」_
+> - 所有组均为手动选择（select），内部包含对应的自动选择策略组
+> - 未匹配到地区组的节点节点将归类至 「其他节点」
 
 - `香港`
 - `日本`
@@ -114,14 +153,14 @@ https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/Script
 - `高倍率节点`
 - `其他节点`
 
-## 效果展示
+## 效果预览
 
 - 客户端： [Bettbox](https://github.com/appshubcc/Bettbox)
 
-|                                                                                  |                                                                                  |                                                                                  |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_1.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_2.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_3.webp) |
-| ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_4.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_5.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_6.webp) |
+|                                                                                  |                                                                                  |                                                                                  |                                                                                  |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_1.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_2.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_3.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_4.webp) |
+| ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_5.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_6.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_7.webp) | ![img](https://raw.githubusercontent.com/AIsouler/MyClash/main/Image/IMG_8.webp) |
 
 ## 致谢
 
@@ -131,7 +170,7 @@ https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/Script
 
 - [YiXuanZX/rules](https://github.com/YiXuanZX/rules)
 
-- [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)
+- [appshubcc/bett-rules](https://github.com/appshubcc/bett-rules)
 
 - [wwqgtxx/clash-rules](https://github.com/wwqgtxx/clash-rules)
 
