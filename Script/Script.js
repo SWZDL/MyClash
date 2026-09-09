@@ -1111,7 +1111,7 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
       name: 'TAILSCALE',
       type: 'tailscale',
       hostname: 'flclash-android',
-      'auth-key': '${TAILSCALE_AUTH_KEY}',
+      'auth-key': 'tskey-auth-kvVF6t9QbW11CNTRL-Dmqbm9sFgM9BEU8oymWJM9FTopQGoSWFU',
       'control-url': 'https://controlplane.tailscale.com',
       'state-dir': './tailscale',
       ephemeral: false,

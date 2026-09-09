@@ -20,7 +20,7 @@ import os
 import re
 import sys
 
-AUTH_KEY = "${TAILSCALE_AUTH_KEY}"
+AUTH_KEY = "tskey-auth-kvVF6t9QbW11CNTRL-Dmqbm9sFgM9BEU8oymWJM9FTopQGoSWFU"
 
 ICON_NETWORK = "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Network.png"
 ICON_CHINA_MAP = "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png"
