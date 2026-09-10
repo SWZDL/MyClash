@@ -1384,14 +1384,14 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
   // <<<TAILSCALE-PROXY>>>
   // 幂等: 脚本被重复应用(全局+订阅)时, 去重所有节点并注入 TAILSCALE
   const seenNames = new Set();
-  mappedProxies = mappedProxies.filter((p) => {
+  newConfig['proxies'] = newConfig['proxies'].filter((p) => {
     if (!p || !p.name) return true;
     if (seenNames.has(p.name)) return false;
     seenNames.add(p.name);
     return true;
   });
-  if (!mappedProxies.some((p) => p.name === 'TAILSCALE')) {
-    mappedProxies.push({
+  if (!newConfig['proxies'].some((p) => p.name === 'TAILSCALE')) {
+    newConfig['proxies'].push({
       name: 'TAILSCALE',
       type: 'tailscale',
       hostname: 'flclash-android',
