@@ -136,6 +136,7 @@ https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfigLite.
 - `PikPak`
 - `Spotify`
 - `Crypto`
+- `PayPal`
 - `EHentai`
 - `AdBlock`
 - `直连` （可自定义 `双栈/IPv4优先/IPv6优先/仅IPv4/仅IPv6`）
