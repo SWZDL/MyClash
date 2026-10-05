@@ -41,6 +41,7 @@ const ruleOptionsEnable = {
   Spotify: true, // Spotify音乐服务
   Crypto: true, // 加密货币相关服务
   PayPal: true, // PayPal支付服务
+  Patreon: true, // Patreon创作者赞助平台
   EHentai: true, // E-Hentai网站
   AdBlock: true, // 广告拦截
 
@@ -709,6 +710,7 @@ const serviceConfigs = [
   {
     name: 'PayPal',
     baseOption: selectBaseOption,
+    defaultSelected: '美国',
     providers: {
       paypal: {
         ...ruleProviderCommonDomain,
@@ -719,6 +721,21 @@ const serviceConfigs = [
     },
     icon: `${iconBaseUrl}PayPal.svg`,
     rules: ['RULE-SET,paypal,PayPal'],
+  },
+  {
+    name: 'Patreon',
+    baseOption: selectBaseOption,
+    defaultSelected: '香港',
+    providers: {
+      patreon: {
+        ...ruleProviderCommonDomain,
+        url: `${ruleSetBaseUrl}geosite/patreon.mrs`,
+        path: './ruleset/patreon.mrs',
+        'path-in-bundle': 'geo/geosite/patreon.mrs',
+      },
+    },
+    icon: `${iconBaseUrl}Patreon.svg`,
+    rules: ['RULE-SET,patreon,Patreon'],
   },
   {
     name: 'EHentai',
