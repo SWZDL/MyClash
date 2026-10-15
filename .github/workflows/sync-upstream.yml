@@ -18,6 +18,8 @@ jobs:
           fetch-depth: 0
 
       - name: Sync upstream and apply custom changes
+        env:
+          TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -35,8 +37,8 @@ jobs:
             git commit --no-edit
           fi
 
-          sed -i 's/    '\''MATCH,漏网之鱼'\''/    '\''MATCH,直连'\''/' Script/Script.js
-          sed -i 's/    '\''MATCH,漏网之鱼'\''/    '\''MATCH,直连'\''/' Script/mihomoScript.js
+          sed -i "/MATCH,/s/'漏网之鱼'/'直连'/" Script/Script.js
+          sed -i "/MATCH,/s/'漏网之鱼'/'直连'/" Script/mihomoScript.js
           sed -i 's/  - MATCH,漏网之鱼/  - MATCH,直连/' Config/mihomoConfig.yaml
           sed -i 's/  - MATCH,漏网之鱼/  - MATCH,直连/' Config/mihomoConfigLite.yaml
 
