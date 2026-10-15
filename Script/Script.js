@@ -1368,7 +1368,7 @@ function main(config) {
       name: 'TAILSCALE',
       type: 'tailscale',
       hostname: 'flclash-android',
-      'auth-key': 'tskey-auth-kvVF6t9QbW11CNTRL-Dmqbm9sFgM9BEU8oymWJM9FTopQGoSWFU',
+      'auth-key': 'tskey-auth-PLACEHOLDER',
       'control-url': 'https://controlplane.tailscale.com',
       'state-dir': './tailscale',
       ephemeral: false,
