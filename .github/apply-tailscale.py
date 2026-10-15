@@ -14,13 +14,14 @@
 - 可重复执行, 用于 GitHub Actions 同步上游后重新注入自定义改动
 - 同时修补 Test/suites/integration.js, 将 TAILSCALE 节点从测试的订阅节点集合中排除
 
-auth-key 变更时, 只需修改下方 AUTH_KEY 并重新运行本脚本。
+auth-key 从环境变量 TAILSCALE_AUTH_KEY 读取(GitHub Actions 由 Secrets 注入),
+变更时更新 Secret 后重新运行本脚本, 生成文件中的旧 key 会被自动替换。
 """
 import os
 import re
 import sys
 
-AUTH_KEY = "tskey-auth-kvVF6t9QbW11CNTRL-Dmqbm9sFgM9BEU8oymWJM9FTopQGoSWFU"
+AUTH_KEY = os.environ.get("TAILSCALE_AUTH_KEY", "").strip()
 
 ICON_NETWORK = "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Network.png"
 ICON_CHINA_MAP = "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png"
@@ -133,15 +134,6 @@ def js_test_proxies_block():
   // <<<TAILSCALE-TEST-END>>>"""
 
 
-def js_test_chain_block():
-    # 链式中转组只包含订阅节点, TAILSCALE 注入在链组构建之后, 不参与计数
-    return """      // <<<TAILSCALE-TEST-CHAIN>>>
-      const subscriptionNodes = out.proxies
-        .filter((p) => p.type !== 'direct' && p.name !== 'TAILSCALE' && !customNodeNames.has(p.name))
-        .map((p) => p.name);
-      // <<<TAILSCALE-TEST-CHAIN-END>>>"""
-
-
 # ---------------------------------------------------------------- 目标文件配置
 
 # (文件路径, 注入块列表)
@@ -158,7 +150,7 @@ TARGETS = [
              "  - { name: '🇨🇳 直连 | 双栈', type: direct }\n"),
             ("# <<<TAILSCALE-GROUP>>>", "# <<<TAILSCALE-GROUP-END>>>",
              yaml_group_block(),
-             f"    icon: '{ICON_CHINA_MAP}'\n"),
+             "    icon: 'https://cdn.jsdmirror.com/gh/AIsouler/MyClash@main/Icons/svg/China.svg'\n"),
             ("# <<<TAILSCALE-RULES>>>", "# <<<TAILSCALE-RULES-END>>>",
              yaml_rules_block(),
              "rules:\n", False, False),
@@ -172,7 +164,7 @@ TARGETS = [
              "  - { name: '🇨🇳 直连 | 双栈', type: direct }\n"),
             ("# <<<TAILSCALE-GROUP>>>", "# <<<TAILSCALE-GROUP-END>>>",
              yaml_group_block(),
-             f"    icon: '{ICON_CHINA_MAP}'\n"),
+             "    icon: 'https://cdn.jsdmirror.com/gh/AIsouler/MyClash@main/Icons/svg/China.svg'\n"),
             ("# <<<TAILSCALE-RULES>>>", "# <<<TAILSCALE-RULES-END>>>",
              yaml_rules_block(),
              "rules:\n", False, False),
@@ -186,10 +178,10 @@ TARGETS = [
              "  newConfig['rules'] = [\n", False, False),
             ("// <<<TAILSCALE-PROXY>>>", "// <<<TAILSCALE-PROXY-END>>>",
              js_proxy_block(),
-             "  newConfig['proxies'] = [...customProxies, ...mappedProxies, ...directProxies];\n"),
+             "  newConfig['proxies'] = [...mappedProxies, ...customProxies, ...directProxies];\n"),
             ("// <<<TAILSCALE-GROUP>>>", "// <<<TAILSCALE-GROUP-END>>>",
              js_group_block(),
-             "      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',\n      hidden: hideManualSelectGroupEnabled,\n    },\n  );\n"),
+             "  functionalGroups.push({\n    ...selectBaseOption,\n    name: '漏网之鱼',\n    proxies: ['默认代理', '直连', ...groupNamesOfSelect],\n    icon: `${iconBaseUrl}Stack.svg`,\n  });\n"),
         ],
     ),
     (
@@ -200,10 +192,10 @@ TARGETS = [
              "  newConfig['rules'] = [\n", False, False),
             ("// <<<TAILSCALE-PROXY>>>", "// <<<TAILSCALE-PROXY-END>>>",
              js_proxy_block(),
-             "  newConfig['proxies'] = [...customProxies, ...mappedProxies, ...directProxies];\n"),
+             "  newConfig['proxies'] = [...mappedProxies, ...customProxies, ...directProxies];\n"),
             ("// <<<TAILSCALE-GROUP>>>", "// <<<TAILSCALE-GROUP-END>>>",
              js_group_block(),
-             "      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',\n      hidden: hideManualSelectGroupEnabled,\n    },\n  );\n"),
+             "  functionalGroups.push({\n    ...selectBaseOption,\n    name: '漏网之鱼',\n    proxies: ['默认代理', '直连', ...groupNamesOfSelect],\n    icon: `${iconBaseUrl}Stack.svg`,\n  });\n"),
         ],
     ),
     (
@@ -212,10 +204,6 @@ TARGETS = [
             ("// <<<TAILSCALE-TEST>>>", "// <<<TAILSCALE-TEST-END>>>",
              js_test_proxies_block(),
              "  const nonDirectProxies = (out) => out.proxies.filter((p) => p.type !== 'direct');\n",
-             True),
-            ("// <<<TAILSCALE-TEST-CHAIN>>>", "// <<<TAILSCALE-TEST-CHAIN-END>>>",
-             js_test_chain_block(),
-             "      const subscriptionNodes = out.proxies\n        .filter((p) => p.type !== 'direct' && !customNodeNames.has(p.name))\n        .map((p) => p.name);\n",
              True),
         ],
     ),
@@ -261,6 +249,9 @@ def apply_block(text, begin, end, block, anchor, replace_anchor=False, blank_lin
 
 
 def main():
+    if not AUTH_KEY:
+        print("错误: 环境变量 TAILSCALE_AUTH_KEY 未设置, 拒绝注入空 auth-key", file=sys.stderr)
+        return 1
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     changed = False
     for rel_path, blocks in TARGETS:

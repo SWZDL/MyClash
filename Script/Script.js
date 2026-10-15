@@ -1149,30 +1149,6 @@ function buildDnsAndHostsConfig(config, filteredProxies) {
       .map((proxy) => proxy.server.toLowerCase())
       .filter((server) => !isIpAddress(server)),
   );
-  // <<<TAILSCALE-PROXY>>>
-  // 幂等: 脚本被重复应用(全局+订阅)时, 去重所有节点并注入 TAILSCALE
-  const seenNames = new Set();
-  newConfig['proxies'] = newConfig['proxies'].filter((p) => {
-    if (!p || !p.name) return true;
-    if (seenNames.has(p.name)) return false;
-    seenNames.add(p.name);
-    return true;
-  });
-  if (!newConfig['proxies'].some((p) => p.name === 'TAILSCALE')) {
-    newConfig['proxies'].push({
-      name: 'TAILSCALE',
-      type: 'tailscale',
-      hostname: 'flclash-android',
-      'auth-key': 'tskey-auth-kvVF6t9QbW11CNTRL-Dmqbm9sFgM9BEU8oymWJM9FTopQGoSWFU',
-      'control-url': 'https://controlplane.tailscale.com',
-      'state-dir': './tailscale',
-      ephemeral: false,
-      udp: true,
-      'accept-routes': true,
-      'ip-version': 'ipv4-prefer',
-    });
-  }
-  // <<<TAILSCALE-PROXY-END>>>
 
   const privateProxyServerNameservers = shouldRewriteByHosts ? [] : proxyServerNameservers;
 
@@ -1329,6 +1305,31 @@ function main(config) {
   };
 
   newConfig['proxies'] = [...mappedProxies, ...customProxies, ...directProxies];
+
+  // <<<TAILSCALE-PROXY>>>
+  // 幂等: 脚本被重复应用(全局+订阅)时, 去重所有节点并注入 TAILSCALE
+  const seenNames = new Set();
+  newConfig['proxies'] = newConfig['proxies'].filter((p) => {
+    if (!p || !p.name) return true;
+    if (seenNames.has(p.name)) return false;
+    seenNames.add(p.name);
+    return true;
+  });
+  if (!newConfig['proxies'].some((p) => p.name === 'TAILSCALE')) {
+    newConfig['proxies'].push({
+      name: 'TAILSCALE',
+      type: 'tailscale',
+      hostname: 'flclash-android',
+      'auth-key': 'tskey-auth-kvVF6t9QbW11CNTRL-Dmqbm9sFgM9BEU8oymWJM9FTopQGoSWFU',
+      'control-url': 'https://controlplane.tailscale.com',
+      'state-dir': './tailscale',
+      ephemeral: false,
+      udp: true,
+      'accept-routes': true,
+      'ip-version': 'ipv4-prefer',
+    });
+  }
+  // <<<TAILSCALE-PROXY-END>>>
   newConfig['proxy-groups'] = [
     globalGroup,
     ...functionalGroups,
@@ -1354,7 +1355,7 @@ function main(config) {
     'RULE-SET,geolocation-!cn,默认代理',
     'RULE-SET,cn_ip,直连',
     'RULE-SET,private_ip,直连',
-    `MATCH,${ruleOptionsEnable.极简模式 ? '默认代理' : '漏网之鱼'}`,
+    `MATCH,${ruleOptionsEnable.极简模式 ? '默认代理' : '直连'}`,
   ];
 
   return newConfig;
