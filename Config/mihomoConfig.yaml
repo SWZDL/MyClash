@@ -720,6 +720,12 @@ proxy-groups:
 # --- 路由规则 (Rules) ---
 
 rules:
+  # <<<TAILSCALE-RULES>>>
+  # Tailscale 网段优先（置于最前）
+  - IP-CIDR,100.64.0.0/10,Tailscale,no-resolve
+  - IP-CIDR,100.100.100.100/32,Tailscale,no-resolve
+  - DOMAIN-SUFFIX,ts.net,Tailscale
+  # <<<TAILSCALE-RULES-END>>>
   # 规则集下载域名，避免出现鸡蛋问题
   - DOMAIN,cdn.jsdmirror.com,直连
 
