@@ -1637,7 +1637,7 @@ function main(config) {
     // 兜底规则
     'RULE-SET,cn_ip,直连',
     'RULE-SET,private_ip,直连',
-    `MATCH,${ruleOptionsEnable.极简国内外分流模式 ? '默认代理' : '漏网之鱼'}`,
+    `MATCH,${ruleOptionsEnable.极简国内外分流模式 ? '默认代理' : '直连'}`,
   ];
 
   return newConfig;
