@@ -721,6 +721,12 @@ proxy-groups:
 # --- 路由规则 (Rules) ---
 
 rules:
+  # <<<TAILSCALE-RULES>>>
+  # Tailscale 网段优先（置于最前）
+  - IP-CIDR,100.64.0.0/10,Tailscale,no-resolve
+  - IP-CIDR,100.100.100.100/32,Tailscale,no-resolve
+  - DOMAIN-SUFFIX,ts.net,Tailscale
+  # <<<TAILSCALE-RULES-END>>>
   # 私有网络直连
   - RULE-SET,private,直连
 
