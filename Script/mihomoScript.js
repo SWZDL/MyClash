@@ -1967,6 +1967,12 @@ function main(config) {
   newConfig['rule-providers'] = finalRuleProviders;
 
   newConfig['rules'] = [
+    // <<<TAILSCALE-RULES>>>
+    // Tailscale 网段优先（置于最前）
+    'IP-CIDR,100.64.0.0/10,Tailscale,no-resolve',
+    'IP-CIDR,100.100.100.100/32,Tailscale,no-resolve',
+    'DOMAIN-SUFFIX,ts.net,Tailscale',
+    // <<<TAILSCALE-RULES-END>>>
     ...priorityRules,
     ...prefixRules,
     ...(ruleOptionsEnable.屏蔽代理QUIC流量 ? blockForeignQuic : []),
@@ -1975,7 +1981,7 @@ function main(config) {
     'RULE-SET,cn_ip,直连',
     'RULE-SET,private_ip,直连',
     ...functionalIpRules,
-    `MATCH,${ruleOptionsEnable.极简国内外分流模式 ? '默认代理' : '漏网之鱼'}`,
+    `MATCH,${ruleOptionsEnable.极简国内外分流模式 ? '默认代理' : '直连'}`,
   ];
 
   return newConfig;

@@ -719,6 +719,12 @@ proxy-groups:
 # --- 路由规则 (Rules) ---
 
 rules:
+  # <<<TAILSCALE-RULES>>>
+  # Tailscale 网段优先（置于最前）
+  - IP-CIDR,100.64.0.0/10,Tailscale,no-resolve
+  - IP-CIDR,100.100.100.100/32,Tailscale,no-resolve
+  - DOMAIN-SUFFIX,ts.net,Tailscale
+  # <<<TAILSCALE-RULES-END>>>
   # 广告拦截
   - RULE-SET,category-ads,AdBlock
 
@@ -784,4 +790,4 @@ rules:
   - RULE-SET,facebook_ip,Meta
   - RULE-SET,netflix_ip,Netflix
   - RULE-SET,spotify_ip,Spotify
-  - MATCH,漏网之鱼
+  - MATCH,直连
